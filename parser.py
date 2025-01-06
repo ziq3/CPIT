@@ -115,7 +115,6 @@ def parse_contest(ID):
     template = f"{CPIT_DIRECTORY}/template.cpp"
     if os.path.exists(template) == False:
         template = None
-    print(template)
 
     for item in all_starts:
         cur_prob = ""
