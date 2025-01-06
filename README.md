@@ -81,6 +81,7 @@ cpit parse c [CONTEST_ID]
 
 ![Parser Contest](assets/parser_contest.png)
 
+Additionally, the parser will create a cpp file for each problem in the contest (for example, in the directory for problem A, there will be a file called `a.cpp`). By defualt, it will be an empty cpp file, but if you create a file called `template.cpp` in the repo, then it will copy the contents of the `template.cpp` into the cpp file.
 
 ### Rating
 *Get the rating of Codeforces problems*
