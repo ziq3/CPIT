@@ -3,7 +3,7 @@ import re
 import subprocess
 import sys
 import cloudscraper
-
+import os
 
 class bcolors:
     HEADER = '\033[95m'
@@ -111,6 +111,12 @@ def parse_contest(ID):
     all_starts = [m.start() for m in re.finditer(
         search_link, f.text)]
     problems = []
+    CPIT_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
+    template = f"{CPIT_DIRECTORY}/template.cpp"
+    if os.path.exists(template) == False:
+        template = None
+    print(template)
+
     for item in all_starts:
         cur_prob = ""
         cur_add = 0
@@ -127,8 +133,11 @@ def parse_contest(ID):
             ID, problem)
         print("{0}Parsing problem {1}{2}{3}".format(bcolors.HEADER,
                                                     bcolors.BOLD, problem, bcolors.ENDC))
-        subprocess.Popen('touch {0}/{1}.cpp'.format(
-            problem, problem.lower()), shell=True, stdout=subprocess.PIPE)
+        if template is not None:
+            subprocess.Popen(f'cp {template} {problem}/{problem.lower()}.cpp', shell=True, stdout=subprocess.PIPE)
+        else:
+            subprocess.Popen('touch {0}/{1}.cpp'.format(
+                problem, problem.lower()), shell=True, stdout=subprocess.PIPE)
         parse_problem(problem_link, "{0}/".format(problem))
     print("{0}Finished parsing contest{1}".format(
         bcolors.OKGREEN, bcolors.ENDC))
