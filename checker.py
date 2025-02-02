@@ -1,185 +1,91 @@
 import subprocess
+import os
+import shutil
 import sys
 
-
-class bcolors:
-    HEADER = '\033[95m'
-    OKBLUE = '\033[94m'
-    OKCYAN = '\033[96m'
-    OKGREEN = '\033[92m'
-    WARNING = '\033[33m'
-    FAIL = '\033[91m'
-    ENDC = '\033[0m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m',
-    WARNING2 = '\u001b[38;5;204m'
-
-
-def get_tests():
+def get_tests(input_ext=".inp"):
     """
-    Gets all the test cases for the current directory
-    Test cases must have the .in extension
+    Get all test cases from the current directory.
+    Test cases are files ending with input_ext (e.g. "1.inp"),
+    excluding the special file ".inp" itself.
     """
     input_files = []
-    output_files = []
-    p = subprocess.Popen(
-        'ls', shell=True, stdout=subprocess.PIPE)
+    p = subprocess.Popen('dir /b', shell=True, stdout=subprocess.PIPE)
     for line in p.stdout.readlines():
-        line = line.decode("utf-8").strip()
-        if(line.endswith(".in")):
-            input_files.append(line)
-        elif(line.endswith(".out")):
-            output_files.append(line)
-    return input_files, output_files
+        file = line.decode("utf-8").strip()
+        if file.endswith(input_ext) and file.lower() != input_ext:
+            input_files.append(file)
+    return input_files
 
-
-def print_input_file(input_file: str):
+def run_test(input_file: str, executable: str):
     """
-    Print contents of input file in clean format
+    Copies test input (e.g. "1.inp") to ".inp", removes any old ".out" file,
+    and runs the executable with forced redirection (".inp" -> ".out").
+    Returns the produced output, any debug info, and expected output.
     """
-    print(bcolors.BOLD + "Input:" + bcolors.ENDC)
-    print("=================================")
-    print(bcolors.OKBLUE, end="")
-    cur_lines = 0
-    with open(f"{input_file}") as f:
-        for line in f.readlines():
-            line = line.strip()
-            if(len(line)):
-                print(line)
-            cur_lines += 1
-            if(cur_lines > 50):
-                print(bcolors.BOLD + "(Data truncated)")
-                break
-    print(bcolors.ENDC, end="")
-    print("=================================")
-
-def run_test(input_file: str, output_files: list[str], executable: str):
-    """
-    Run the executable with the given input file
-    Capature the output and debug print statements
-    """
-    p = subprocess.Popen('./{0} < {1}'.format(executable, input_file), shell=True,
-                             stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    results_lines = []
-    debug_lines = []
-    expected_lines = []
-    for line in p.stdout.readlines():
-        line = line.decode("utf-8").strip()
-        if(len(line)):
-            results_lines.append(line)
-    for line in p.stderr.readlines():
-        line = line.decode("utf-8").strip()
-        if(len(line)):
-            debug_lines.append(line)
+    # Copy the test input file (e.g. "1.inp") to ".inp"
+    shutil.copy(input_file, ".inp")
     
-    expected_output_file = input_file.replace(".in", ".out")
-    if expected_output_file in output_files:
-        with open(expected_output_file) as f:
-            for line in f.readlines():
-                line = line.strip()
-                if(len(line)):
-                    expected_lines.append(line)
-    return results_lines, debug_lines, expected_lines
+    # Remove previous output file if it exists
+    if os.path.exists(".out"):
+        os.remove(".out")
+    
+    # Force main.exe to read from .inp and write to .out
+    cmd = f'{executable} < .inp > .out'
+    proc = subprocess.Popen(cmd, shell=True,
+                            stdout=subprocess.PIPE,
+                            stderr=subprocess.PIPE)
+    stdout, stderr = proc.communicate()
+    
+    produced_lines = []
+    if os.path.exists(".out"):
+        with open(".out", "r", encoding="utf-8") as f:
+            produced_lines = [line.strip() for line in f if line.strip()]
+    
+    expected_output_file = input_file.replace(".inp", ".out")
+    expected_lines = []
+    if os.path.exists(expected_output_file):
+        with open(expected_output_file, "r", encoding="utf-8") as f:
+            expected_lines = [line.strip() for line in f if line.strip()]
+    
+    debug_lines = [line.strip() for line in stderr.decode("utf-8").splitlines() if line.strip()]
+    return produced_lines, debug_lines, expected_lines
 
-def determine_status(results_lines, expected_lines):
-    """
-    Return true if test didn't fail
-    Return false if test failed
-    Prints out the header for the test case
-    """
-    if len(expected_lines) == 0:
-        print(bcolors.WARNING + "No output file found" + bcolors.ENDC)
-        return True
-    capatalization = False
-    if(len(results_lines) != len(expected_lines)):
-        print(bcolors.FAIL + "FAILED" + bcolors.ENDC)
-        return False
-    else:
-        for i in range(len(results_lines)):
-            if(results_lines[i].lower() != expected_lines[i].lower()):
-                print(bcolors.FAIL + "FAILED" + bcolors.ENDC)
-                return False
-            elif(results_lines[i] != expected_lines[i]):
-                capatalization = True
-    # Test case passed
-    print(bcolors.OKGREEN + "ACCEPTED" + bcolors.ENDC, end="")
-    if(capatalization):
-        print(bcolors.WARNING + " (capatalization)" + bcolors.ENDC)
-    else:
-        print()
-    return True
+def print_input_file(filename):
+    print("Input file:", filename)
 
-def print_results(results_lines, debug_lines, expected_lines):
-    current_line = 0
-    print(bcolors.BOLD + "Results:" + bcolors.ENDC)
-    print("=================================")
-    print(bcolors.OKBLUE, end="")
-    for line in results_lines:
-        if len(expected_lines) != 0 and (current_line >= len(expected_lines) or line.lower() != expected_lines[current_line].lower()):
-            print(bcolors.WARNING2 + line + bcolors.OKBLUE)
+def print_results(results, debug, expected):
+    print("Results:")
+    for line in results:
+        print(line)
+    print("Debug:")
+    for line in debug:
+        print(line)
+    print("Expected:")
+    for line in expected:
+        print(line)
+
+def test_code(executable: str, input_ext=".inp"):
+    tests = get_tests(input_ext)
+    for test in tests:
+        produced_lines, debug_lines, expected_lines = run_test(test, executable)
+        print("Running on test " + test)
+        if len(expected_lines) == 0:
+            print("WARNING: No expected output file found")
+            sys.exit(1)
+        if len(produced_lines) != len(expected_lines):
+            print("FAILED")
+            print_input_file(test)
+            print_results(produced_lines, debug_lines, expected_lines)
+            sys.exit(1)
         else:
-            print(line)
-        current_line += 1
-        if(current_line > 50):
-            print(bcolors.BOLD + "(Data truncated)")
-            break
-    print(bcolors.ENDC, end="")
-    print("=================================")
-
-    if len(expected_lines) > 0:
-        current_line = 0
-        print(bcolors.BOLD + "Expected:" + bcolors.ENDC)
-        print("=================================")
-        print(bcolors.OKBLUE, end="")
-        for line in expected_lines:
-            if(current_line >= len(results_lines) or line.lower() != results_lines[current_line].lower()):
-                print(bcolors.WARNING2 + line + bcolors.OKBLUE)
-            else:
-                print(line)
-            current_line += 1
-            if(current_line > 50):
-                print(bcolors.BOLD + "(Data truncated)")
-                break
-        print(bcolors.ENDC, end="")
-        print("=================================")
-
-    if(len(debug_lines) > 0):
-        has_debug = True
-        print(bcolors.BOLD + "Debug:" + bcolors.ENDC)
-        print("=================================")
-        print(bcolors.WARNING, end="")
-        for line in debug_lines:
-            print(line)
-        print(bcolors.ENDC, end="")
-        print("=================================")
-    print()
-
-def test_code(executable: str):
-    """
-    Given all test files, run code on it and see if output is correct
-    """
-    input_files, output_files = get_tests()
-    successful = True
-    has_debug = False
-    for test in input_files:
-        results_lines, debug_lines, expected_lines = run_test(test, output_files, executable)
-        print("Running on test {0}{1}{2}\nVerdict: ".format(
-            bcolors.BOLD, test, bcolors.ENDC), end="")
-        successful &= determine_status(results_lines, expected_lines)
-        print_input_file(test)
-        print_results(results_lines, debug_lines, expected_lines)
-        if len(debug_lines) > 0:
-            has_debug = True
-        
-    if successful == False:
-        print("{0}FAILED SAMPLES{1}".format(bcolors.FAIL, bcolors.ENDC))
-    else:
-        print("{0}ALL SAMPLES PASSED{1}".format(bcolors.OKGREEN, bcolors.ENDC))
-    if(has_debug):
-        print(bcolors.WARNING +
-              "WARNING: YOUR CODE PRINTED DEBUG STATEMENTS" + bcolors.ENDC)
-
-
-if __name__ == "__main__":
-    executable = sys.argv[1]
-    test_code(executable)
+            for i in range(len(produced_lines)):
+                if produced_lines[i].lower() != expected_lines[i].lower():
+                    print("FAILED")
+                    print_input_file(test)
+                    print_results(produced_lines, debug_lines, expected_lines)
+                    sys.exit(1)
+            print("ACCEPTED")
+            print_input_file(test)
+            print_results(produced_lines, debug_lines, expected_lines)
+    print("ALL SAMPLES PASSED")

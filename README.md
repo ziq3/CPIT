@@ -1,24 +1,25 @@
 # CPIT (Competitive Programming Interface Tool)
 
-### Table of Contents 
-- [Background](#Background)  
-- [Summary](#Summary-of-CPIT)  
-- [How to use](#How-to-use-it)
-- [Checker](#Checker)
-    - [Checker Usage](#Checker-Usage)
-- [Parser](#Parser)
-    - [Parser Usage](#Parser-Usage)
-- [Rating](#Rating)
-    - [Rating Usage](#Rating-Usage)
-- [Memory](#Memory)
-    - [Memory Usage](#Memory-Usage)
-- [Future Steps](#Future-Steps)
+## Table of Contents
+- [Background](#background)
+- [Summary](#summary)
+- [Installation](#installation)
+- [Usage](#usage)
+  - [Checker and Testing](#checker-and-testing)
+  - [Parsing with CPIT](#parsing-with-cpit)
+- [Future Plans](#future-plans)
+
 ## Background
 
 I've been doing competitive programming for a few years now, and during that time, I've created a decent amount of command line tools to streamline certain processes in the terminal and make life easier. This repository is a collection of the tools that I've created, which I hope can help out others! I'd be happy to take any feedback or questions!
 
-## Summary of CPIT
-This is a command line tool for competitive programming (mainly tested with the Codeforces platform, and for users who use C++). The main tools provided by this is the ability to automatically test your code against sample cases and parse sample cases from the Codeforces website to your local directory. A couple other smaller tools is the ability to get the rating for a problem, and estimate how much memory an array of certain length will take. 
+## Summary
+
+**CPIT** is a command-line tool designed for competitive programming, primarily tested with **Codeforces** and **C++**. It offers the following key features:
+
+- **Automatic Compilation:** Compiles your C++ solution (`main.cpp`) into an executable (`main.exe`).
+- **Test Case Parsing:** Extracts sample test cases from a Codeforces problem link.
+- **Automated Testing:** Runs the compiled solution against sample test cases and compares outputs.
 
 ## Set up
 
@@ -34,89 +35,36 @@ This tool is ran with `python3`. Make sure to install the required libraries to 
 pip install -r requirements.txt
 ```
 
-To make this tool easier to use, I set up an alias. This can be put in `/.bashrc` to save the alias (or whatever equivalent file for your environment).
+Ensure g++ is installed on your Windows machine for C++ compilation.
 
-```
-alias cpit='python3 [PATH_OF_REPO]/cpit.py' 
-```
+## Usage
 
-Below are the details to run specific commands. All commands should be ran in the terminal.
+### Checker and Testing
 
-### Checker
-*Automatically test your code against samples*
+CPIT automates the compilation and testing process as follows:
 
-One of the cool features about this tool is the ability to test your code on sample test cases. Specifically, this tool will automatically check all files with `.in` and `.out` extensions in the directory you are currently in, then run those samples against your code, and print out any differences between your code's output and the expected sample output.
+1. **Compiles** `main.cpp` into `main.exe` using g++.
+2. **Parses** the provided Codeforces problem link to generate sample test cases.
+3. **Runs** the compiled solution against each test case and checks for differences.
 
-#### Checker: Usage
-To run this tool:
+The parsed test files will be named:
+- `1.inp`, `1.out`
+- `2.inp`, `2.out`
+- ...and so on.
 
-```
-cpit checker [EXECUTABLE_NAME]
-```
-(Note: this command requires that the program is already compiled, then the name or path to the executable is passed as an argument to be ran)
+CPIT then runs `main.exe` on each `.inp` file and compares the output with the corresponding `.out` file.
 
-![Checker](assets/checker.png)
+### Parsing with CPIT
 
-### Parser
-*Parse sample input/output files on Codeforces*
+Run the tool from the terminal (PowerShell or Command Prompt on Windows) with the problem link as a parameter:
+   ```sh
+   python cpit.py [PROBLEM_LINK]
+   ```
 
-To pair with this feature, I also created another feature to parse the sample input/outputs on a Codeforces webpage, then download them locally into `.in` and `.out` files that can then be used with the previous `checker` command. On top of an individual problem, this feature can also parse all the problems of a contest, creating a subdirectory for each problem, with the corresponding sample input/outputs in that subdirectory. 
-
-#### Parser: Usage
-To parse a single problem:
-
-```
-cpit parse ['1' or 'o' or 'p'] [PROBLEM_LINK]
-```
-
-![Parser](assets/parser.png)
-
-To parse a contest:
-
-```
-cpit parse c [CONTEST_ID]
-```
-
-(Note: The contest ID can be found in the URL of the contest page. For example, the contest ID of https://codeforces.com/contest/1993 is 1993)
-
-![Parser Contest](assets/parser_contest.png)
-
-Additionally, the parser will create a cpp file for each problem in the contest (for example, in the directory for problem A, there will be a file called `a.cpp`). By defualt, it will be an empty cpp file, but if you create a file called `template.cpp` in the repo, then it will copy the contents of the `template.cpp` into the cpp file.
-
-### Rating
-*Get the rating of Codeforces problems*
-
-Another small tool is the ability to get the rating of a Codeforces problem in the terminal. Personally, I disable tags in Codeforces problems, which also includes the rating tag. This feature allows me to continue to disable tags, but be able to get the rating if I want to see it.
-
-#### Rating: Usage
-
-To run this tool:
-
-```
-cpit rating
-```
-
-You will then be prompted to enter a Codeforces problem link, which you can paste in to get the rating. 
-
-![Parser](assets/rating.png)
-
-### Memory
-*Estimate memory an array will take*
-
-Finally, the last small feature is a tool to help quickly estimate how much memory an array will take, which can be important to determine whether a solution will fall in the proper memory limits. 
-
-#### Memory: Usage
-To run the tool:
-
-```
-cpit mem
-```
-
-You will first be prompted with the length of the array, which can be entered as an integer, like `5000`, or in scientific notation, like `4.5e5`. 
-
-Then, you will be prompted with the data type of the array. Currently, it only supports `int`, `ll`, and `double`.
-
-![Parser](assets/mem.png)
+When executed, CPIT will:
+- Compile `main.cpp` into `main.exe`.
+- Parse the problem from the provided Codeforces link and create sample test files.
+- Run `main.exe` on each sample and report any differences between your solution’s output and the expected output.
 
 ## Future Steps
 
