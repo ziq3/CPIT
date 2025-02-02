@@ -71,7 +71,7 @@ def test_code(executable: str, input_ext=".inp"):
             sys.exit(1)
         else:
             for i in range(len(produced_lines)):
-                if produced_lines[i].lower() != expected_lines[i].lower():
+                if produced_lines[i] != expected_lines[i]:
                     print("FAILED")
                     print_input_file(test)
                     print_results(produced_lines, expected_lines)
