@@ -28,8 +28,8 @@ if __name__ == "__main__":
     print("Parsing problem from link:", link)
     # Parse the problem:
     # This creates files: 1.inp, 2.inp, ... for inputs and 1.out, 2.out, ... for expected outputs
-    parse_problem(link, input_ext=".inp")
+    parse_problem(link)
     
     print("Running main.exe on parsed tests")
     # Run main.exe on each .inp file and compare its output with the corresponding .out file.
-    test_code("main.exe", input_ext=".inp")
+    test_code("main.exe")
