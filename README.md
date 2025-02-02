@@ -11,65 +11,74 @@
 
 ## Background
 
-I've been doing competitive programming for a few years now, and during that time, I've created a decent amount of command line tools to streamline certain processes in the terminal and make life easier. This repository is a collection of the tools that I've created, which I hope can help out others! I'd be happy to take any feedback or questions!
+Competitive programming has been a passion of mine for several years, and during this time, I’ve developed a variety of command-line tools to simplify workflows and streamline terminal processes. This repository is a collection of these tools, and I hope they prove useful for others. Feedback and questions are always welcome!
 
 ## Summary
 
-**CPIT** is a command-line tool designed for competitive programming, primarily tested with **Codeforces** and **C++**. It offers the following key features:
+**CPIT** is a command-line tool tailored for competitive programming, primarily tested with **Codeforces** and **C++**. It features:
 
 - **Automatic Compilation:** Compiles your C++ solution (`main.cpp`) into an executable (`main.exe`).
-- **Test Case Parsing:** Extracts sample test cases from a Codeforces problem link.
-- **Automated Testing:** Runs the compiled solution against sample test cases and compares outputs.
+- **Test Case Parsing:** Extracts sample test cases directly from a Codeforces problem link.
+- **Automated Testing:** Runs your compiled solution against the sample test cases and compares the outputs.
 
-## Set up
+## Installation
 
-First, clone this repository. You can clone this repository anywhere on your computer, as later we will set up an alias to actually run this tool that can be called from anywhere.
+1. **Download the Executable:**  
+   Grab the latest CPIT executable from the releases page:  
+   [Download CPIT](https://github.com/ziq3/CPIT/releases/download/1/cpit.exe)
 
-```
-git clone https://github.com/ziq3/CPIT.git
-```
-
-This tool is ran with `python3`. Make sure to install the required libraries to run it.
-
-```
-pip install -r requirements.txt
-```
-
-Ensure g++ is installed on your Windows machine for C++ compilation.
+2. **Install g++:**  
+   Ensure that g++ is installed on your Windows machine, as it is required for C++ compilation.
 
 ## Usage
 
+Make sure your solution file is named `main.cpp` and is located in the same directory as CPIT. From your terminal (PowerShell or Command Prompt), run:
+
+```
+cpit LINK_PROBLEM
+```
+
+For example:
+
+```
+cpit https://codeforces.com/contest/961/problem/E
+```
+
 ### Checker and Testing
 
-CPIT automates the compilation and testing process as follows:
+CPIT automates the compilation and testing process in the following steps:
 
-1. **Compiles** `main.cpp` into `main.exe` using g++.
-2. **Parses** the provided Codeforces problem link to generate sample test cases.
-3. **Runs** the compiled solution against each test case and checks for differences.
+1. **Compilation:**  
+   Compiles `main.cpp` into `main.exe` using g++.
 
-The parsed test files will be named:
-- `1.inp`, `1.out`
-- `2.inp`, `2.out`
-- ...and so on.
+2. **Test Case Parsing:**  
+   Retrieves sample test cases from the provided Codeforces problem link. The test files are generated with the following naming convention:
+   - `1.inp` and `1.out`
+   - `2.inp` and `2.out`
+   - ... and so on.
 
-CPIT then runs `main.exe` on each `.inp` file and compares the output with the corresponding `.out` file.
+3. **Automated Testing:**  
+   Executes `main.exe` on each `.inp` file and compares the output with its corresponding `.out` file to identify any discrepancies.
 
 ### Parsing with CPIT
 
-Run the tool from the terminal (PowerShell or Command Prompt on Windows) with the problem link as a parameter:
-   ```sh
-   python cpit.py [PROBLEM_LINK]
-   ```
+Alternatively, you can invoke the tool via Python (if needed) using:
+
+```
+python cpit.py [PROBLEM_LINK]
+```
 
 When executed, CPIT will:
 - Compile `main.cpp` into `main.exe`.
 - Parse the problem from the provided Codeforces link and create sample test files.
-- Run `main.exe` on each sample and report any differences between your solution’s output and the expected output.
+- Run `main.exe` on each test case and report any output differences compared to the expected results.
 
-## Future Steps
+## Future Plans
 
-I hope to continue improving CPIT and provide more features/tools to enhance convenience in competitive programming. Some future steps I have in mind are:
+I am continually working to enhance CPIT. Upcoming improvements include:
 
-* Add support for other platforms for parsing, such as AtCoder
-* Fix bugs where parser doesn't work if Cloudflare is in use
-* Potentially more features!
+- **Platform Support:** Adding parsing support for additional competitive programming platforms (e.g., AtCoder).
+- **Improved Reliability:** Resolving issues with the parser, especially when Cloudflare protection is active.
+- **New Features:** Introducing more functionalities to further streamline competitive programming workflows.
+
+Feel free to contribute, report issues, or suggest enhancements. Enjoy coding!
