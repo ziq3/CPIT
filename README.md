@@ -26,7 +26,7 @@ I've been doing competitive programming for a few years now, and during that tim
 First, clone this repository. You can clone this repository anywhere on your computer, as later we will set up an alias to actually run this tool that can be called from anywhere.
 
 ```
-git clone https://github.com/C1XTEEN/CPIT.git
+git clone https://github.com/ziq3/CPIT.git
 ```
 
 This tool is ran with `python3`. Make sure to install the required libraries to run it.
